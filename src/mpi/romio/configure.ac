@@ -79,6 +79,7 @@ AC_SUBST([MPI_H_INCLUDE])
 
 TEST_LIBNAME=""
 FILE_SYSTEM=""
+HAVE_LUSTRE_LOCKAHEAD=""
 
 # Do not set variables to empty that may be communicated from the
 # outside environment (e.g., MPI_LIB, MPI_BIN_DIR, LIBNAME)
@@ -218,6 +219,8 @@ AC_ARG_ENABLE(weak-symbols,
 [--enable-weak-symbols - Turn on support for weak symbols],,enable_weak_symbols=yes)
 AC_ARG_ENABLE(debug,
 [--enable-debug - Build a debugging version],,)
+AC_ARG_ENABLE(lustre-lockahead,
+[--enable-lustre-lockahead - Turn on support for Lustre lockahead ladvise],,)
 AC_ARG_WITH(file-system,[
 --with-file-system=name - Build with support for the named file systems],,)
 AC_ARG_WITH(pvfs2,[
@@ -774,6 +777,9 @@ if test -n "$FILE_SYSTEM" ; then
    done
 fi
 
+# Add conditional compilation of Lustre lockahead sources
+AM_CONDITIONAL([LUSTRE_LOCKAHEAD],[test "$enable_lustre_lockahead" = "yes"])
+
 #############################################
 # This PVFS2 logic is special because it's hard to get it right if it comes
 # before the known_filesystems check loop above.  So we handle it down here,
@@ -887,6 +893,11 @@ if test -n "$file_system_lustre"; then
         AC_DEFINE(ROMIO_LUSTRE,1,[Define for ROMIO with LUSTRE]),
         AC_MSG_ERROR([LUSTRE support requested but cannot find lustre/lustre_user.h header file])                                        
     )
+    # Check to see if weak symbols work correctly
+    if test "$enable_lustre_lockahead" = "yes" ; then
+        # Turn on Lustre lockahead ladvise support
+	HAVE_LUSTRE_LOCKAHEAD="#define HAVE_LUSTRE_LOCKAHEAD"
+    fi
 fi
 
 if test -n "$file_system_xfs"; then
@@ -1639,6 +1650,7 @@ echo "setting USER_FFLAGS to $USER_FFLAGS"
 
 AC_SUBST(ARCH)
 AC_SUBST(FILE_SYSTEM)
+AC_SUBST(HAVE_LUSTRE_LOCKAHEAD)
 AC_SUBST(CC)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(CFLAGS)
