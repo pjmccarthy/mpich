@@ -79,7 +79,6 @@ AC_SUBST([MPI_H_INCLUDE])
 
 TEST_LIBNAME=""
 FILE_SYSTEM=""
-HAVE_LUSTRE_LOCKAHEAD=""
 
 # Do not set variables to empty that may be communicated from the
 # outside environment (e.g., MPI_LIB, MPI_BIN_DIR, LIBNAME)
@@ -896,7 +895,7 @@ if test -n "$file_system_lustre"; then
     # Check to see if weak symbols work correctly
     if test "$enable_lustre_lockahead" = "yes" ; then
         # Turn on Lustre lockahead ladvise support
-	HAVE_LUSTRE_LOCKAHEAD="#define HAVE_LUSTRE_LOCKAHEAD"
+	    AC_DEFINE(HAVE_LUSTRE_LOCKAHEAD, 1, [Define if LUSTRE_LOCKAHEAD is enabled.])
     fi
 fi
 
@@ -1650,7 +1649,6 @@ echo "setting USER_FFLAGS to $USER_FFLAGS"
 
 AC_SUBST(ARCH)
 AC_SUBST(FILE_SYSTEM)
-AC_SUBST(HAVE_LUSTRE_LOCKAHEAD)
 AC_SUBST(CC)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(CFLAGS)
